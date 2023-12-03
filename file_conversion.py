@@ -12,3 +12,4 @@ if raw_audio.channels != 1:
     raw_audio.export("recording_mono.wav", format="wav")
 else:
     raw_audio.export("recording_mono.wav", format="wav")
+print(pydub.utils.mediainfo("recording_mono.wav"))
