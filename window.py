@@ -25,9 +25,13 @@ def open_file():
     if ('.wav' in filepath) or ('.mp3' in filepath):
         request['text']= filepath
         checkButton.pack(side='top', pady=(5,0))
+        dataDisplay.pack_forget()
+        graph.get_tk_widget().pack_forget()
     else:
         request['text']= "ERROR: File must be .wav or .mp3!"
         checkButton.pack_forget()
+        dataDisplay.pack_forget()
+        graph.get_tk_widget().pack_forget()
         return
     filename = os.path.basename(filepath)
     request['text'] = filepath
@@ -44,17 +48,22 @@ def plotData():
     samplerate, data = wavfile.read(request['text'])
     length = data.shape[0] / samplerate
     time = np.linspace(0., length, data.shape[0])
-    fig = Figure(figsize= (5,5), dpi=100)
     plotter = fig.add_subplot(111)
     plotter.plot(time, data[:])
-    graph = FigureCanvasTkAgg(fig, master=root)
     graph.draw()
     graph.get_tk_widget().pack(side='left', pady=(5,0))
+    dataDisplay.pack(side='right')
 
 
 reqButton = Button(root, text='choose an audio file',command=open_file)
 reqButton.pack(side='top', pady=(5,0))
 
 checkButton = Button(root, text='Plot the given data', command=plotData)
+
+dataDisplay = Label(root, text="Place holder for echo data", bg='white', fg='black')
+
+fig = Figure(figsize= (5,5), dpi=100)
+graph = FigureCanvasTkAgg(fig, master=root)
+
 
 root.mainloop()
