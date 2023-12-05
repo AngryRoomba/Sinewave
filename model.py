@@ -3,7 +3,7 @@ import pydub.utils
 from pydub import AudioSegment
 
 
-class Model:
+class AudioFile:
     def __init__(self, file):
         self.file = file
         self.raw_audio = None
@@ -25,3 +25,5 @@ class Model:
         else:
             self.raw_audio.export("recording_mono.wav", format="wav")
         self.raw_audio_mono = AudioSegment.from_file("recording_mono.wav", format="wav")
+
+
