@@ -64,3 +64,9 @@ class View:
         self.graph.draw()
         self.graph.get_tk_widget().pack(side='left', pady=(5,0))
         self.dataDisplay.pack(side='right')
+
+    def getCurretFile(self):
+        if self.request['text'] == "ERROR: File must be .wav or .mp3!" or self.request['text'] == 'choose an audio file':
+            return 0
+        else:
+            return self.request['text']
