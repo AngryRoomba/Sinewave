@@ -14,4 +14,4 @@ class Controller:
         return
 
     def math(self):
-        self.model.math()
+        return self.model.math()

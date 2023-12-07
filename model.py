@@ -34,7 +34,7 @@ class Model:
 
         dataInDb = self.frequencyCheck()
         plt.figure()
-        plt.plot(self.t, dataInDb, linewidth = 1, alpha=0.7, color='#004bc6')
+        plt.plot(self.t, dataInDb, linewidth=1, alpha=0.7, color='#004bc6')
         plt.xlabel('Time (s)')
         plt.ylabel('Power (dB)')
 
@@ -62,7 +62,7 @@ class Model:
         rt60 = rt20 *3
         plt.grid()
         plt.show()
-        print(rt60)
+        return self.t, dataInDb, indexOfMax, indexLess5, indexLess25
 
     def findTargetFrequency(self, freqs):
         for x in freqs:

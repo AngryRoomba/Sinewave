@@ -27,10 +27,14 @@ class View:
 
         self.checkButton = Button(root, text='Plot the given data', command=self.plotData)
 
+        self.time = Label(root, text='Time display', bg='white', fg='black')
+
         self.dataDisplay = Label(root, text="Place holder for echo data", bg='white', fg='black')
 
-        self.fig = Figure(figsize= (5,5), dpi=100)
+        self.fig = Figure(figsize= (4,4), dpi=80)
+        self.dBfig = Figure(figsize= (4,4), dpi=80)
         self.graph = FigureCanvasTkAgg(self.fig, master=root)
+        self.dBgraph = FigureCanvasTkAgg(self.dBfig, master=root)
         root.mainloop()
 
 
@@ -41,25 +45,34 @@ class View:
             self.checkButton.pack(side='top', pady=(5,0))
             self.dataDisplay.pack_forget()
             self.graph.get_tk_widget().pack_forget()
+            self.dBgraph.get_tk_widget().pack_forget()
         else:
             self.request['text']= "ERROR: File must be .wav or .mp3!"
             self.checkButton.pack_forget()
             self.dataDisplay.pack_forget()
             self.graph.get_tk_widget().pack_forget()
+            self.dBgraph.get_tk_widget().pack_forget()
             return
         self.controller.convert(self.request['text'])
 
 
     def plotData(self):
-        self.controller.math()
+        t, DbData, iMax, i5, i25 = self.controller.math()
         samplerate, data = wavfile.read(self.request['text'])
         length = data.shape[0] / samplerate
         time = np.linspace(0., length, data.shape[0])
+        dBplotter = self.dBfig.add_subplot(111)
+        dBplotter.plot(t, DbData, linewidth=1, alpha=0.7, color='#004bc6')
+        dBplotter.plot(t[iMax], DbData[iMax], 'go')
+        dBplotter.plot(t[i5], DbData[i5], 'yo')
+        dBplotter.plot(t[i25], DbData[i25], 'ro')
         plotter = self.fig.add_subplot(111)
         plotter.plot(time, data[:])
         self.graph.draw()
         self.graph.get_tk_widget().pack(side='left', pady=(5,0))
-        self.dataDisplay.pack(side='right')
+        #self.dataDisplay.pack(side='right')
+        self.dBgraph.draw()
+        self.dBgraph.get_tk_widget().pack(side='right', pady=(5,0))
 
     def getCurretFile(self):
         if self.request['text'] == "ERROR: File must be .wav or .mp3!" or self.request['text'] == 'choose an audio file':
