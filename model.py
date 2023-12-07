@@ -61,10 +61,11 @@ class Model:
         rt20 = (self.t[indexLess5] - self.t[indexLess25])[0]
         rt60 = rt20 *3
         plt.grid()
-        plt.show()
+        #plt.show()
         return self.t, dataInDb, indexOfMax, indexLess5, indexLess25
 
     def findTargetFrequency(self, freqs):
+        #250 low, 1000 mid, 5000 hi
         for x in freqs:
             if x > 1000:
                 break

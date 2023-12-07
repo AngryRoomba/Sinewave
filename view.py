@@ -63,16 +63,18 @@ class View:
         time = np.linspace(0., length, data.shape[0])
         dBplotter = self.dBfig.add_subplot(111)
         dBplotter.plot(t, DbData, linewidth=1, alpha=0.7, color='#004bc6')
+        self.dBfig.supxlabel("Time (s)")
+        self.dBfig.supylabel("Power (dB)")
         dBplotter.plot(t[iMax], DbData[iMax], 'go')
         dBplotter.plot(t[i5], DbData[i5], 'yo')
         dBplotter.plot(t[i25], DbData[i25], 'ro')
         plotter = self.fig.add_subplot(111)
         plotter.plot(time, data[:])
         self.graph.draw()
-        self.graph.get_tk_widget().pack(side='left', pady=(5,0))
+        self.graph.get_tk_widget().pack(side='left', pady=(5,0), anchor='nw')
         #self.dataDisplay.pack(side='right')
         self.dBgraph.draw()
-        self.dBgraph.get_tk_widget().pack(side='right', pady=(5,0))
+        self.dBgraph.get_tk_widget().pack(side='right', pady=(5,0), anchor = 'ne')
 
     def getCurretFile(self):
         if self.request['text'] == "ERROR: File must be .wav or .mp3!" or self.request['text'] == 'choose an audio file':
