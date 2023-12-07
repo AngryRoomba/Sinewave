@@ -33,7 +33,7 @@ class Model:
         self.spectrum, self.freqs, self.t, self.im = plt.specgram(self.data, Fs=self.sample_rate, NFFT=1024, cmap=plt.get_cmap('autumn_r'))
 
         dataInDb = self.frequencyCheck()
-        #Needs part 3,4,5 still
+
     def findTargetFrequency(self,freqs):
         for x in freqs:
             if x > 1000:
@@ -47,3 +47,8 @@ class Model:
         dataForFrequency = self.spectrum[indexOfFrequency]
         dataInDBFun = 10* np.log10(dataForFrequency)
         return dataInDBFun
+
+    def findNearestValue(self,array,value):
+        array = np.asarray(array)
+        idx = (np.abs(array-value)).argmin()
+        return array[idx]
