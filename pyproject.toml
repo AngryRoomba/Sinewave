@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+[project]
+name = "sinwave_graphing_group_30"
+version = "0.3"
+authors = [
+    {name="Hunter DeLoach", email="hdeloach2363@floridapoly.edu"},
+    {name="Maxime Weeks", email="mweeks2426@floridapoly.edu"},
+    {name="Ethan Ashton", email="eashton2950@floridapoly.edu"}
+]
+description = "The final project for CS Problem Solving and Solutions by Group 30. This progam creates sinwave graphs from audio input."
+readme = "README.md"
+requires-python = ">=3.8"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent"
+]
+
+[project.urls]
