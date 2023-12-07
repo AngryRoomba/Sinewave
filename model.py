@@ -4,6 +4,7 @@ from pydub import AudioSegment
 
 
 class Model:
+
     def __init__(self, file):
         self.file = file
         self.raw_audio = None
@@ -15,6 +16,7 @@ class Model:
             sound = AudioSegment.from_file("recording.mp3")
             sound.export("recording.wav", format="wav")
         self.raw_audio = AudioSegment.from_file("recording.wav", format="wav")
+
 
     def audio_to_mono(self):
         if self.raw_audio.channels != 1:
