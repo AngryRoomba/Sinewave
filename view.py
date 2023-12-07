@@ -47,12 +47,11 @@ class View:
             self.dataDisplay.pack_forget()
             self.graph.get_tk_widget().pack_forget()
             return
-        self.controller.convert(filepath)
-
-
+        self.controller.convert(self.request['text'])
 
 
     def plotData(self):
+        self.controller.math()
         samplerate, data = wavfile.read(self.request['text'])
         length = data.shape[0] / samplerate
         time = np.linspace(0., length, data.shape[0])
@@ -67,3 +66,5 @@ class View:
             return 0
         else:
             return self.request['text']
+
+view = View()

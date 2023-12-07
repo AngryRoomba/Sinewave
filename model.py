@@ -13,7 +13,7 @@ class Model:
         self.raw_audio_mono = None
         self.samplerate = None
         self.data = None
-        self.spectrum, self.freqs, self.t, self.im = None
+        self.spectrum, self.freqs, self.t, self.im = None, None, None, None
 
     def format_conversion(self):
         file_extension = os.path.splitext(self.file)[1]
@@ -29,12 +29,42 @@ class Model:
         self.raw_audio_mono = AudioSegment.from_file("recording.wav", format="wav")
 
     def math(self):
-        self.sample_rate, self.data = wavfile.read(self.raw_audio_mono)
-        self.spectrum, self.freqs, self.t, self.im = plt.specgram(self.data, Fs=self.sample_rate, NFFT=1024, cmap=plt.get_cmap('autumn_r'))
+        self.samplerate, self.data = wavfile.read(self.file)
+        self.spectrum, self.freqs, self.t, self.im = plt.specgram(self.data, Fs=self.samplerate, NFFT=1024, cmap=plt.get_cmap('autumn_r'))
 
         dataInDb = self.frequencyCheck()
+        plt.figure()
+        plt.plot(self.t, dataInDb, linewidth = 1, alpha=0.7, color='#004bc6')
+        plt.xlabel('Time (s)')
+        plt.ylabel('Power (dB)')
 
-    def findTargetFrequency(self,freqs):
+        indexOfMax = np.argmax(dataInDb)
+        valueOfMax = dataInDb[indexOfMax]
+
+        plt.plot(self.t[indexOfMax], dataInDb[indexOfMax], 'go')
+
+        slicedArray = dataInDb[indexOfMax:]
+
+        maxLess5 = valueOfMax - 5
+
+        maxLess5 = self.findNearestValue(slicedArray, maxLess5)
+
+        indexLess5 = np.where(dataInDb == maxLess5)
+
+        plt.plot(self.t[indexLess5], dataInDb[indexLess5], 'yo')
+
+        maxless25 = valueOfMax - 25
+        maxless25 = self.findNearestValue(slicedArray, maxless25)
+        indexLess25 = np.where(dataInDb == maxless25)
+
+        plt.plot(self.t[indexLess25], dataInDb[indexLess25], 'ro')
+        rt20 = (self.t[indexLess5] - self.t[indexLess25])[0]
+        rt60 = rt20 *3
+        plt.grid()
+        plt.show()
+        print(rt60)
+
+    def findTargetFrequency(self, freqs):
         for x in freqs:
             if x > 1000:
                 break
