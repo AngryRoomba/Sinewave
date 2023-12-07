@@ -3,7 +3,8 @@ import pydub.utils
 from pydub import AudioSegment
 
 
-class AudioFile:
+class Model:
+
     def __init__(self, file):
         self.file = file
         self.raw_audio = None
@@ -12,11 +13,10 @@ class AudioFile:
     def format_conversion(self):
         file_extension = os.path.splitext(self.file)[1]
         if file_extension.lower() == ".mp3":
-            sound = AudioSegment.from_file(self.file)
+            sound = AudioSegment.from_file("recording.mp3")
             sound.export("recording.wav", format="wav")
-            self.raw_audio = AudioSegment.from_file("recording.wav", format="wav")
-        else:
-            self.raw_audio = AudioSegment.from_file(self.file, format="wav")
+        self.raw_audio = AudioSegment.from_file("recording.wav", format="wav")
+
 
     def audio_to_mono(self):
         if self.raw_audio.channels != 1:
@@ -25,5 +25,3 @@ class AudioFile:
         else:
             self.raw_audio.export("recording_mono.wav", format="wav")
         self.raw_audio_mono = AudioSegment.from_file("recording_mono.wav", format="wav")
-
-
