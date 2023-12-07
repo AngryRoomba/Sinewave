@@ -8,6 +8,7 @@ from pydub import AudioSegment
 import scipy.io
 from scipy.io import wavfile
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+from controller import Controller
 
 class View:
     def __init__(self):
@@ -16,6 +17,8 @@ class View:
         root.configure(background="grey")
         root.minsize(400, 400)
         root.geometry('860x640+360+80')
+
+        self.controller = Controller()
 
         self.request = Label(root, text='Please choose an audio file', bg='white', fg='black')
         self.request.pack(side="top", pady=(5,0))
@@ -44,14 +47,8 @@ class View:
             self.dataDisplay.pack_forget()
             self.graph.get_tk_widget().pack_forget()
             return
-        filename = os.path.basename(filepath)
-        self.request['text'] = filepath
-        if '.mp3' in filename:
-            self.request['text'] = 'finding...'
-            sound = AudioSegment.from_file(filepath)
-            self.request['text'] = 'converting...'
-            sound.export('file.wav', format='wav')
-            self.request['text'] = 'converted!'
+        self.controller.convert(filepath)
+
 
 
 
