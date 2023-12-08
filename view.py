@@ -31,12 +31,20 @@ class View:
 
         self.dataDisplay = Label(root, text="Place holder for echo data", bg='white', fg='black')
 
+        self.frametop = Frame(root)
+        self.framebottom = Frame(root)
+
         self.fig = Figure(figsize= (4,4), dpi=80)
         self.dBfig = Figure(figsize= (4,4), dpi=80)
         self.specfig = Figure(figsize= (4,4), dpi=80)
-        self.graph = FigureCanvasTkAgg(self.fig, master=root)
-        self.dBgraph = FigureCanvasTkAgg(self.dBfig, master=root)
-        self.specGraph = FigureCanvasTkAgg(self.specfig, master = root)
+        self.lowfig = Figure(figsize=(4,4), dpi=80)
+        self.highfig = Figure(figsize=(4,4), dpi=80)
+        self.graph = FigureCanvasTkAgg(self.fig, master=self.frametop)
+        self.dBgraph = FigureCanvasTkAgg(self.dBfig, master=self.framebottom)
+        self.specGraph = FigureCanvasTkAgg(self.specfig, master = self.frametop)
+        self.lowGraph = FigureCanvasTkAgg(self.lowfig, master = self.framebottom)
+        self.highGraph = FigureCanvasTkAgg(self.highfig, master = self.framebottom)
+
         root.mainloop()
 
 
@@ -60,6 +68,8 @@ class View:
 
     def plotData(self):
         t, DbData, iMax, i5, i25, file = self.controller.math(1000)
+        tLow, dBDataLow, iMaxLow, i5Low, i25Low, file = self.controller.math(250)
+        tHigh, dBDataHigh, iMaxHigh, i5High, i25High, file = self.controller.math(5000)
         samplerate, data = wavfile.read(file)
         length = data.shape[0] / samplerate
         time = np.linspace(0., length, data.shape[0])
@@ -68,11 +78,29 @@ class View:
         dBplotter.plot(t, DbData, linewidth=1, alpha=0.7, color='#004bc6')
         self.dBfig.supxlabel("Time (s)")
         self.dBfig.supylabel("Power (dB)")
-        self.dBfig.suptitle("High, Medium, and Low Frequencies")
+        self.dBfig.suptitle("Medium Frequency RT60")
         self.fig.suptitle("Waveform")
         dBplotter.plot(t[iMax], DbData[iMax], 'go')
         dBplotter.plot(t[i5], DbData[i5], 'yo')
         dBplotter.plot(t[i25], DbData[i25], 'ro')
+
+        Lowplotter = self.lowfig.add_subplot(111)
+        Lowplotter.plot(tLow, dBDataLow, linewidth=1, alpha=0.7, color='#004bc6')
+        self.lowfig.supxlabel("Time (s)")
+        self.lowfig.supylabel("Power (dB)")
+        self.lowfig.suptitle("Low Frequency RT60")
+        Lowplotter.plot(t[iMaxLow], DbData[iMaxLow], 'go')
+        Lowplotter.plot(t[i5Low], DbData[i5Low], 'yo')
+        Lowplotter.plot(t[i25Low], DbData[i25Low], 'ro')
+
+        Highplotter = self.highfig.add_subplot(111)
+        Highplotter.plot(tHigh, dBDataHigh, linewidth=1, alpha=0.7, color='#004bc6')
+        self.highfig.supxlabel("Time (s)")
+        self.highfig.supylabel("Power (dB)")
+        self.highfig.suptitle("High Frequency RT60")
+        Highplotter.plot(t[iMaxHigh], DbData[iMaxHigh], 'go')
+        Highplotter.plot(t[i5High], DbData[i5High], 'yo')
+        Highplotter.plot(t[i25High], DbData[i25High], 'ro')
 
         self.fig.supxlabel('Time (s)')
         self.fig.supylabel('Frequency (Hz)')
@@ -85,14 +113,19 @@ class View:
         cbar = self.specfig.colorbar(im)
         cbar.set_label('Intensity (dB)')
 
-
+        self.frametop.pack(side='top')
+        self.framebottom.pack(side='bottom')
         self.specGraph.draw()
-        self.specGraph.get_tk_widget().pack(side='left',pady=(5, 0), anchor='nw')
+        self.specGraph.get_tk_widget().pack(side='left',pady=(5, 0), anchor='nw', expand=True)
         self.graph.draw()
-        self.graph.get_tk_widget().pack(side='right',padx=(5,0),pady=(5,0), anchor='ne')
+        self.graph.get_tk_widget().pack(side='left',padx=(5,0),pady=(5,0), anchor='nw', expand=True)
         #self.dataDisplay.pack(side='right')
         self.dBgraph.draw()
-        self.dBgraph.get_tk_widget().pack(padx=(3,3),pady=(5,0), anchor = 'se')
+        self.dBgraph.get_tk_widget().pack(side='left',padx=(3,3),pady=(5,0), anchor = 'nw', expand=True)
+        self.lowGraph.draw()
+        self.lowGraph.get_tk_widget().pack(side='left',anchor='sw',expand=True)
+        self.highGraph.draw()
+        self.highGraph.get_tk_widget().pack(side='bottom',anchor='sw',expand=True)
 
 
     def getCurretFile(self):
