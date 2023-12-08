@@ -61,12 +61,11 @@ class Model:
         rt60 = rt20 *3
         plt.grid()
         #plt.show()
-        return self.t, dataInDb, indexOfMax, indexLess5, indexLess25
+        return self.t, dataInDb, indexOfMax, indexLess5, indexLess25, self.file, self.im
 
-    def findTargetFrequency(self, freqs):
-        #250 low, 1000 mid, 5000 hi
+    def findTargetFrequency(self, freqs, targetFreq = 1000):
         for x in freqs:
-            if x > 1000:
+            if x > targetFreq:
                 break
         return x
 
