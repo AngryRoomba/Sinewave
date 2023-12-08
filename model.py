@@ -1,5 +1,5 @@
 import os
-import pydub.utils
+import ffmpeg
 from pydub import AudioSegment
 import numpy as np
 from scipy.io import wavfile
@@ -16,11 +16,10 @@ class Model:
         self.spectrum, self.freqs, self.t, self.im = None, None, None, None
 
     def format_conversion(self):
-        file_extension = os.path.splitext(self.file)[1]
-        if file_extension.lower() == ".mp3":
-            sound = AudioSegment.from_file(self.file)
-            sound.export("recording.wav", format="wav")
-        self.raw_audio = AudioSegment.from_file("recording.wav", format="wav")
+        sound = AudioSegment.from_file(self.file)
+        sound.export("recording.wav", format="wav")
+        self.file = 'recording.wav'
+        self.raw_audio = AudioSegment.from_file(self.file, format="wav")
 
     def audio_to_mono(self):
         if self.raw_audio.channels != 1:
