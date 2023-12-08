@@ -59,7 +59,7 @@ class View:
 
 
     def plotData(self):
-        t, DbData, iMax, i5, i25, file = self.controller.math()
+        t, DbData, iMax, i5, i25, file = self.controller.math(1000)
         samplerate, data = wavfile.read(file)
         length = data.shape[0] / samplerate
         time = np.linspace(0., length, data.shape[0])
