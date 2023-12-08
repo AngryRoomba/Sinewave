@@ -16,7 +16,7 @@ class View:
         root.title("Audiowave display")
         root.configure(background="grey")
         root.minsize(400, 400)
-        root.geometry('860x640+360+80')
+        root.geometry('980x760+300+20')
 
         self.controller = Controller()
 
@@ -33,8 +33,10 @@ class View:
 
         self.fig = Figure(figsize= (4,4), dpi=80)
         self.dBfig = Figure(figsize= (4,4), dpi=80)
+        self.specfig = Figure(figsize= (4,4), dpi=80)
         self.graph = FigureCanvasTkAgg(self.fig, master=root)
         self.dBgraph = FigureCanvasTkAgg(self.dBfig, master=root)
+        self.specGraph = FigureCanvasTkAgg(self.specfig, master = root)
         root.mainloop()
 
 
@@ -57,24 +59,41 @@ class View:
 
 
     def plotData(self):
-        t, DbData, iMax, i5, i25 = self.controller.math()
-        samplerate, data = wavfile.read(self.request['text'])
+        t, DbData, iMax, i5, i25, file, im = self.controller.math()
+        samplerate, data = wavfile.read(file)
         length = data.shape[0] / samplerate
         time = np.linspace(0., length, data.shape[0])
+
         dBplotter = self.dBfig.add_subplot(111)
         dBplotter.plot(t, DbData, linewidth=1, alpha=0.7, color='#004bc6')
         self.dBfig.supxlabel("Time (s)")
         self.dBfig.supylabel("Power (dB)")
+        self.dBfig.suptitle("High, Medium, and Low Frequencies")
+        self.fig.suptitle("Waveform")
         dBplotter.plot(t[iMax], DbData[iMax], 'go')
         dBplotter.plot(t[i5], DbData[i5], 'yo')
         dBplotter.plot(t[i25], DbData[i25], 'ro')
+
         plotter = self.fig.add_subplot(111)
         plotter.plot(time, data[:])
+
+
+        self.specfig.suptitle("Spectrogram")
+        #self.specfig.supxLabel("Frequency (Hz)")
+        #self.specfig.supylabel("time (s)")
+        cbar = self.specfig.colorbar(im)
+        cbar.set_label('Intensity (dB)')
+        specPlotter = self.specfig.add_subplot(111)
+        specPlotter.specgram(data, Fs=samplerate, NFFT=1024, cmap=plt.get_cmap('autumn_r'))
+
+        self.specGraph.draw()
+        self.specGraph.get_tk_widget().pack(side='left',pady=(5, 0), anchor='nw')
         self.graph.draw()
-        self.graph.get_tk_widget().pack(side='left', pady=(5,0), anchor='nw')
+        self.graph.get_tk_widget().pack(side='right',padx=(5,0),pady=(5,0), anchor='ne')
         #self.dataDisplay.pack(side='right')
         self.dBgraph.draw()
-        self.dBgraph.get_tk_widget().pack(side='right', pady=(5,0), anchor = 'ne')
+        self.dBgraph.get_tk_widget().pack(padx=(3,3),pady=(5,0), anchor = 'se')
+
 
     def getCurretFile(self):
         if self.request['text'] == "ERROR: File must be .wav or .mp3!" or self.request['text'] == 'choose an audio file':
