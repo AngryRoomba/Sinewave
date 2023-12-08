@@ -26,12 +26,12 @@ class Model:
             self.raw_audio.export("recording.wav", format="wav")
         self.raw_audio_mono = AudioSegment.from_file("recording.wav", format="wav")
 
-    def math(self):
+    def math(self, targetFreq):
         self.samplerate, self.data = wavfile.read(self.file)
         self.spectrum, self.freqs, self.t, self.im = plt.specgram(self.data, Fs=self.samplerate, NFFT=1024,
                                                                   cmap=plt.get_cmap('autumn_r'))
 
-        dataInDb = self.frequencyCheck()
+        dataInDb = self.frequencyCheck(targetFreq)
         plt.figure()
         plt.plot(self.t, dataInDb, linewidth=1, alpha=0.7, color='#004bc6')
         plt.xlabel('Time (s)')
@@ -63,16 +63,16 @@ class Model:
         #plt.show()
         return self.t, dataInDb, indexOfMax, indexLess5, indexLess25, self.file
 
-    def findTargetFrequency(self, freqs, targetFreq = 1000):
+    def findTargetFrequency(self, freqs, targetFreq=1000):
 
         for x in freqs:
             if x > targetFreq:
                 break
         return x
 
-    def frequencyCheck(self):
+    def frequencyCheck(self, targetFreq):
         global targetFrequency
-        targetFrequency = self.findTargetFrequency(self.freqs)
+        targetFrequency = self.findTargetFrequency(self.freqs, targetFreq)
         indexOfFrequency = np.where(self.freqs == targetFrequency)[0][0]
         dataForFrequency = self.spectrum[indexOfFrequency]
         dataInDBFun = 10 * np.log10(dataForFrequency)
