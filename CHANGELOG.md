@@ -1,3 +1,9 @@
+### Dec 8 v4
+- Removed metadata from input in modle.py
+- Added graphs to GUI using view.py
+- Changed graphs to use anchor packing
+- Made view.py actually start the program
+
 ### Dec 13 v3
 - Removed redundant code in model.py
 - Created pyproject.toml containing author and program informations
