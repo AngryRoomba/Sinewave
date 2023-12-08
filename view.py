@@ -70,3 +70,5 @@ class View:
             return 0
         else:
             return self.request['text']
+        
+view = View()
