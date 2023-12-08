@@ -1,9 +1,8 @@
-import os
-import ffmpeg
 from pydub import AudioSegment
 import numpy as np
 from scipy.io import wavfile
 import matplotlib.pyplot as plt
+
 
 class Model:
 
@@ -29,7 +28,8 @@ class Model:
 
     def math(self):
         self.samplerate, self.data = wavfile.read(self.file)
-        self.spectrum, self.freqs, self.t, self.im = plt.specgram(self.data, Fs=self.samplerate, NFFT=1024, cmap=plt.get_cmap('autumn_r'))
+        self.spectrum, self.freqs, self.t, self.im = plt.specgram(self.data, Fs=self.samplerate, NFFT=1024,
+                                                                  cmap=plt.get_cmap('autumn_r'))
 
         dataInDb = self.frequencyCheck()
         plt.figure()
@@ -58,13 +58,13 @@ class Model:
 
         plt.plot(self.t[indexLess25], dataInDb[indexLess25], 'ro')
         rt20 = (self.t[indexLess5] - self.t[indexLess25])[0]
-        rt60 = rt20 *3
+        rt60 = rt20 * 3
         plt.grid()
-        #plt.show()
+        # plt.show()
         return self.t, dataInDb, indexOfMax, indexLess5, indexLess25
 
     def findTargetFrequency(self, freqs):
-        #250 low, 1000 mid, 5000 hi
+        # 250 low, 1000 mid, 5000 hi
         for x in freqs:
             if x > 1000:
                 break
@@ -75,10 +75,10 @@ class Model:
         targetFrequency = self.findTargetFrequency(self.freqs)
         indexOfFrequency = np.where(self.freqs == targetFrequency)[0][0]
         dataForFrequency = self.spectrum[indexOfFrequency]
-        dataInDBFun = 10* np.log10(dataForFrequency)
+        dataInDBFun = 10 * np.log10(dataForFrequency)
         return dataInDBFun
 
-    def findNearestValue(self,array,value):
+    def findNearestValue(self, array, value):
         array = np.asarray(array)
-        idx = (np.abs(array-value)).argmin()
+        idx = (np.abs(array - value)).argmin()
         return array[idx]
