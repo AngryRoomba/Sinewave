@@ -59,7 +59,7 @@ class View:
 
 
     def plotData(self):
-        t, DbData, iMax, i5, i25, file, im = self.controller.math()
+        t, DbData, iMax, i5, i25, file = self.controller.math()
         samplerate, data = wavfile.read(file)
         length = data.shape[0] / samplerate
         time = np.linspace(0., length, data.shape[0])
@@ -74,17 +74,17 @@ class View:
         dBplotter.plot(t[i5], DbData[i5], 'yo')
         dBplotter.plot(t[i25], DbData[i25], 'ro')
 
+        self.fig.supxlabel('Time (s)')
+        self.fig.supylabel('Frequency (Hz)')
         plotter = self.fig.add_subplot(111)
         plotter.plot(time, data[:])
 
-
         self.specfig.suptitle("Spectrogram")
-        #self.specfig.supxLabel("Frequency (Hz)")
-        #self.specfig.supylabel("time (s)")
+        specPlotter = self.specfig.add_subplot(111)
+        spec, fr, ti, im = specPlotter.specgram(data, Fs=samplerate, NFFT=1024, cmap=plt.get_cmap('autumn_r'))
         cbar = self.specfig.colorbar(im)
         cbar.set_label('Intensity (dB)')
-        specPlotter = self.specfig.add_subplot(111)
-        specPlotter.specgram(data, Fs=samplerate, NFFT=1024, cmap=plt.get_cmap('autumn_r'))
+
 
         self.specGraph.draw()
         self.specGraph.get_tk_widget().pack(side='left',pady=(5, 0), anchor='nw')
