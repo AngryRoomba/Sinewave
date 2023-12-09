@@ -10,6 +10,7 @@ class Model:
         self.file = file
         self.raw_audio = None
         self.raw_audio_mono = None
+        self.time = None
         self.samplerate = None
         self.data = None
         self.spectrum, self.freqs, self.t, self.im = None, None, None, None
@@ -25,6 +26,8 @@ class Model:
             self.raw_audio = self.raw_audio.set_channels(1)
             self.raw_audio.export(self.file, format="wav")
         self.raw_audio_mono = AudioSegment.from_file(self.file, format="wav")
+        self.time = self.raw_audio_mono.duration_seconds
+
 
     def math(self, targetFreq):
         self.samplerate, self.data = wavfile.read(self.file)

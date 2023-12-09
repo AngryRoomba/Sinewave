@@ -152,7 +152,7 @@ class View:
         totalplotter.plot(t[i25], DbData[i25], 'ro', label="_")
         self.totalfig.legend()
 
-        self.dataDisplay['text']= 'The file is ' + str(time) + 'seconds long, the frequency of highest amplitude is XXX and the average RT60s are:\n LOW: '+ str(rt60Low-0.5) + ' MEDIUM: ' + str(rt60-.5) + ' HIGH: '+ str(rt60High-0.5)
+        self.dataDisplay['text']= 'The file is ' + str(round(self.controller.model.time, 3)) + ' seconds long, the frequency of highest amplitude is XXX and the average RT60s are:\n LOW: '+ str(round(rt60Low-0.5, 3)) + ' MEDIUM: ' + str(round(rt60-.5, 3)) + ' HIGH: '+ str(round(rt60High-0.5, 3))
         self.dataDisplay.pack(side='bottom')
 
         #self.frametop.pack(side='top')
