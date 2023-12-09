@@ -10,6 +10,7 @@ from scipy.io import wavfile
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from controller import Controller
 
+
 class View:
     def __init__(self):
         root = Tk()
@@ -21,11 +22,13 @@ class View:
         self.controller = Controller()
 
         self.request = Label(root, text='Please choose an audio file', bg='white', fg='black')
-        self.request.pack(side="top", pady=(5,0))
-        self.reqButton = Button(root, text='choose an audio file',command=self.open_file)
-        self.reqButton.pack(side='top', pady=(5,0))
+        self.request.pack(side="top", pady=(5, 0))
+        self.reqButton = Button(root, text='Select Audio File', command=self.open_file)
+        self.reqButton.pack(side='top', pady=(5, 0))
 
         self.checkButton = Button(root, text='Plot the given data', command=self.plotData)
+        self.waveButton = Button(root, text='Show the Waveform', command=self.plotData)
+        self.spectButton = Button(root, text='Show the Spectrogram', command=self.plotData)
 
         self.time = Label(root, text='Time display', bg='white', fg='black')
 
@@ -34,38 +37,38 @@ class View:
         self.frametop = Frame(root)
         self.framebottom = Frame(root)
 
-        self.fig = Figure(figsize= (4,4), dpi=80)
-        self.dBfig = Figure(figsize= (4,4), dpi=80)
-        self.specfig = Figure(figsize= (4,4), dpi=80)
-        self.lowfig = Figure(figsize=(4,4), dpi=80)
-        self.highfig = Figure(figsize=(4,4), dpi=80)
+        self.fig = Figure(figsize=(4, 4), dpi=80)
+        self.dBfig = Figure(figsize=(4, 4), dpi=80)
+        self.specfig = Figure(figsize=(4, 4), dpi=80)
+        self.lowfig = Figure(figsize=(4, 4), dpi=80)
+        self.highfig = Figure(figsize=(4, 4), dpi=80)
         self.graph = FigureCanvasTkAgg(self.fig, master=self.frametop)
         self.dBgraph = FigureCanvasTkAgg(self.dBfig, master=self.framebottom)
-        self.specGraph = FigureCanvasTkAgg(self.specfig, master = self.frametop)
-        self.lowGraph = FigureCanvasTkAgg(self.lowfig, master = self.framebottom)
-        self.highGraph = FigureCanvasTkAgg(self.highfig, master = self.framebottom)
+        self.specGraph = FigureCanvasTkAgg(self.specfig, master=self.frametop)
+        self.lowGraph = FigureCanvasTkAgg(self.lowfig, master=self.framebottom)
+        self.highGraph = FigureCanvasTkAgg(self.highfig, master=self.framebottom)
 
         root.mainloop()
 
-
     def open_file(self):
-        filepath = filedialog.askopenfilename(title='choose an audio file')
+        filepath = filedialog.askopenfilename(title='Select Audio File')
         ext = os.path.splitext(filepath)[-1].lower()
         if (ext == ".wav") or (ext == ".mp3"):
             self.request['text'] = filepath
-            self.checkButton.pack(side='top', pady=(5,0))
+            self.checkButton.pack(side='top', pady=(5, 0))
+            self.waveButton.pack(side='top', pady=(5, 0))
+            self.spectButton.pack(side='top', pady=(5, 0))
             self.dataDisplay.pack_forget()
             self.graph.get_tk_widget().pack_forget()
             self.dBgraph.get_tk_widget().pack_forget()
         else:
-            self.request['text']= "ERROR: File must be .wav or .mp3!"
+            self.request['text'] = "ERROR: File must be .wav or .mp3!"
             self.checkButton.pack_forget()
             self.dataDisplay.pack_forget()
             self.graph.get_tk_widget().pack_forget()
             self.dBgraph.get_tk_widget().pack_forget()
             return
         self.controller.convert(self.request['text'])
-
 
     def plotData(self):
         t, DbData, iMax, i5, i25, file = self.controller.math(1000)
@@ -117,22 +120,23 @@ class View:
         self.frametop.pack(side='top')
         self.framebottom.pack(side='bottom')
         self.specGraph.draw()
-        self.specGraph.get_tk_widget().pack(side='left',pady=(5, 0), anchor='nw', expand=True)
+        self.specGraph.get_tk_widget().pack(side='left', pady=(5, 0), anchor='nw', expand=True)
         self.graph.draw()
-        self.graph.get_tk_widget().pack(side='left',padx=(5,0),pady=(5,0), anchor='nw', expand=True)
-        #self.dataDisplay.pack(side='right')
+        self.graph.get_tk_widget().pack(side='left', padx=(5, 0), pady=(5, 0), anchor='nw', expand=True)
+        # self.dataDisplay.pack(side='right')
         self.dBgraph.draw()
-        self.dBgraph.get_tk_widget().pack(side='left',padx=(3,3),pady=(5,0), anchor = 'nw', expand=True)
+        self.dBgraph.get_tk_widget().pack(side='left', padx=(3, 3), pady=(5, 0), anchor='nw', expand=True)
         self.lowGraph.draw()
-        self.lowGraph.get_tk_widget().pack(side='left',anchor='sw',expand=True)
+        self.lowGraph.get_tk_widget().pack(side='left', anchor='sw', expand=True)
         self.highGraph.draw()
-        self.highGraph.get_tk_widget().pack(side='bottom',anchor='sw',expand=True)
-
+        self.highGraph.get_tk_widget().pack(side='bottom', anchor='sw', expand=True)
 
     def getCurretFile(self):
-        if self.request['text'] == "ERROR: File must be .wav or .mp3!" or self.request['text'] == 'choose an audio file':
+        if self.request['text'] == "ERROR: File must be .wav or .mp3!" or self.request[
+            'text'] == 'choose an audio file':
             return 0
         else:
             return self.request['text']
+
 
 view = View()
