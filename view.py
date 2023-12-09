@@ -50,8 +50,9 @@ class View:
 
     def open_file(self):
         filepath = filedialog.askopenfilename(title='choose an audio file')
-        if ('.wav' in filepath) or ('.mp3' in filepath):
-            self.request['text']= filepath
+        ext = os.path.splitext(filepath)[-1].lower()
+        if (ext == ".wav") or (ext == ".mp3"):
+            self.request['text'] = filepath
             self.checkButton.pack(side='top', pady=(5,0))
             self.dataDisplay.pack_forget()
             self.graph.get_tk_widget().pack_forget()
