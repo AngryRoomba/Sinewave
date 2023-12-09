@@ -20,19 +20,24 @@ class View:
         root.geometry('980x760+300+20')
 
         self.controller = Controller()
+        self.framebutton = Frame(root, bg='grey')
 
         self.request = Label(root, text='Please choose an audio file', bg='white', fg='black')
         self.request.pack(side="top", pady=(5, 0))
         self.reqButton = Button(root, text='Select Audio File', command=self.open_file)
         self.reqButton.pack(side='top', pady=(5, 0))
 
-        self.checkButton = Button(root, text='Plot RT60s', command=self.plotData)
-        self.waveButton = Button(root, text='Show the Waveform', command=self.plotWaveform)
-        self.spectButton = Button(root, text='Show the Spectrogram', command=self.plotSpectrogram)
+        self.checkButton = Button(master=self.framebutton, text='Plot RT60s', command=self.plotRT60s)
+        self.waveButton = Button(master=self.framebutton, text='Show the Waveform', command=self.plotWaveform)
+        self.spectButton = Button(master=self.framebutton, text='Show the Spectrogram', command=self.plotSpectrogram)
+        self.totalButton = Button(root, text='Display all RT60s at once', command=self.plotAllRT60s)
 
         self.time = Label(root, text='Time display', bg='white', fg='black')
 
         self.dataDisplay = Label(root, text="Place holder for echo data", bg='white', fg='black')
+
+        self.RT60counter = 0
+        self.cycleButton = Button(root, text='Show next RT60 graph', command=self.cycleRT60)
 
         self.frametop = Frame(root)
         self.framebottom = Frame(root)
@@ -42,11 +47,13 @@ class View:
         self.specfig = Figure(figsize=(4, 4), dpi=80)
         self.lowfig = Figure(figsize=(4, 4), dpi=80)
         self.highfig = Figure(figsize=(4, 4), dpi=80)
+        self.totalfig = Figure(figsize=(4,4), dpi=80)
         self.graph = FigureCanvasTkAgg(self.fig, master=self.frametop)
         self.dBgraph = FigureCanvasTkAgg(self.dBfig, master=self.framebottom)
         self.specGraph = FigureCanvasTkAgg(self.specfig, master=self.frametop)
         self.lowGraph = FigureCanvasTkAgg(self.lowfig, master=self.framebottom)
         self.highGraph = FigureCanvasTkAgg(self.highfig, master=self.framebottom)
+        self.totalgraph = FigureCanvasTkAgg(self.totalfig, master=self.frametop)
 
         root.mainloop()
 
@@ -55,32 +62,28 @@ class View:
         ext = os.path.splitext(filepath)[-1].lower()
         if (ext == ".wav") or (ext == ".mp3"):
             self.request['text'] = filepath
-            self.checkButton.pack(side='top', pady=(5, 0))
-            self.waveButton.pack(side='top', pady=(5, 0))
-            self.spectButton.pack(side='top', pady=(5, 0))
+            self.framebutton.pack(side='top', pady=(5,0))
+            self.checkButton.pack(side='left')
+            self.waveButton.pack(side='left', padx=(8, 0))
+            self.spectButton.pack(side='left', padx=(8, 0))
+            self.totalButton.pack(pady=(5,0))
+            self.RT60counter = 0
             self.dataDisplay.pack_forget()
-            self.graph.get_tk_widget().pack_forget()
-            self.dBgraph.get_tk_widget().pack_forget()
-            self.specGraph.get_tk_widget().pack_forget()
-            self.lowGraph.get_tk_widget().pack_forget()
-            self.highGraph.get_tk_widget().pack_forget()
+            self.unpackGraphs()
             self.frametop.pack_forget()
             self.framebottom.pack_forget()
         else:
             self.request['text'] = "ERROR: File must be .wav or .mp3!"
             self.checkButton.pack_forget()
             self.dataDisplay.pack_forget()
-            self.graph.get_tk_widget().pack_forget()
-            self.dBgraph.get_tk_widget().pack_forget()
-            self.specGraph.get_tk_widget().pack_forget()
-            self.lowGraph.get_tk_widget().pack_forget()
-            self.highGraph.get_tk_widget().pack_forget()
-            self.frametop.pack_forget()
-            self.framebottom.pack_forget()
+            self.unpackGraphs()
             self.waveButton.pack_forget()
             self.spectButton.pack_forget()
+            self.framebutton.pack_forget()
+            self.totalButton.pack_forget()
             return
         self.controller.convert(self.request['text'])
+        self.plotData()
 
     def plotData(self):
         t, DbData, iMax, i5, i25, file = self.controller.math(1000)
@@ -117,34 +120,11 @@ class View:
         Highplotter.plot(t[i5High], dBDataHigh[i5High], 'yo')
         Highplotter.plot(t[i25High], dBDataHigh[i25High], 'ro')
 
-        self.frametop.pack(side='top')
-        self.framebottom.pack(side='bottom')
-
-        # self.dataDisplay.pack(side='right')
-        self.dBgraph.draw()
-        self.dBgraph.get_tk_widget().pack(side='left', padx=(3, 3), pady=(5, 0), anchor='nw', expand=True)
-        self.lowGraph.draw()
-        self.lowGraph.get_tk_widget().pack(side='left', anchor='sw', expand=True)
-        self.highGraph.draw()
-        self.highGraph.get_tk_widget().pack(side='bottom', anchor='sw', expand=True)
-
-    def plotSpectrogram(self):
-        samplerate, data = wavfile.read(self.controller.model.file)
-
         self.specfig.suptitle("Spectrogram")
         specPlotter = self.specfig.add_subplot(111)
         spec, fr, ti, im = specPlotter.specgram(data, Fs=samplerate, NFFT=1024, cmap=plt.get_cmap('autumn_r'))
         cbar = self.specfig.colorbar(im)
         cbar.set_label('Intensity (dB)')
-
-        self.frametop.pack(side='top')
-        self.specGraph.draw()
-        self.specGraph.get_tk_widget().pack(side='left', pady=(5, 0), anchor='nw', expand=True)
-
-    def plotWaveform(self):
-        samplerate, data = wavfile.read(self.controller.model.file)
-        length = data.shape[0] / samplerate
-        time = np.linspace(0., length, data.shape[0])
 
         self.fig.suptitle("Waveform")
         self.fig.supxlabel('Time (s)')
@@ -152,10 +132,90 @@ class View:
         plotter = self.fig.add_subplot(111)
         plotter.plot(time, data[:])
 
-        self.frametop.pack(side='top')
-        self.framebottom.pack(side='bottom')
+        self.totalfig.suptitle("All RT60s")
+        self.totalfig.supylabel("Power (dB)")
+        self.totalfig.supxlabel("Time (s)")
+        totalplotter = self.fig.add_subplot(111)
+        totalplotter.plot(tHigh, dBDataHigh, linewidth=1, alpha=0.7, color='#004bc6')
+        totalplotter.plot(t[iMaxHigh], dBDataHigh[iMaxHigh], 'go')
+        totalplotter.plot(t[i5High], dBDataHigh[i5High], 'yo')
+        totalplotter.plot(t[i25High], dBDataHigh[i25High], 'ro')
+        totalplotter.plot(t, dBDataLow, linewidth=1, alpha=0.7, color='#004bc6')
+        totalplotter.plot(t[iMaxLow], dBDataLow[iMaxLow], 'go')
+        totalplotter.plot(t[i5Low], dBDataLow[i5Low], 'yo')
+        totalplotter.plot(t[i25Low], dBDataLow[i25Low], 'ro')
+        totalplotter.plot(t, DbData, linewidth=1, alpha=0.7, color='#004bc6')
+        totalplotter.plot(t[iMax], DbData[iMax], 'go')
+        totalplotter.plot(t[i5], DbData[i5], 'yo')
+        totalplotter.plot(t[i25], DbData[i25], 'ro')
+
+
+        #self.frametop.pack(side='top')
+        #self.framebottom.pack(side='bottom')
+
+        # self.dataDisplay.pack(side='right')
+        #self.dBgraph.draw()
+        #self.dBgraph.get_tk_widget().pack(side='left', padx=(3, 3), pady=(5, 0), anchor='nw', expand=True)
+        #self.lowGraph.draw()
+        #self.lowGraph.get_tk_widget().pack(side='left', anchor='sw', expand=True)
+        #self.highGraph.draw()
+        #self.highGraph.get_tk_widget().pack(side='bottom', anchor='sw', expand=True)
+
+    def plotSpectrogram(self):
+        self.unpackGraphs()
+
+        self.frametop.pack(pady=(20,0))
+        self.specGraph.draw()
+        self.specGraph.get_tk_widget().pack(side='left', pady=(5, 0), anchor='nw', expand=True)
+
+    def plotWaveform(self):
+        self.unpackGraphs()
+
+        self.frametop.pack(pady=(20,0))
+        #self.framebottom.pack(side='bottom')
         self.graph.draw()
         self.graph.get_tk_widget().pack(side='left', padx=(5, 0), pady=(5, 0), anchor='nw', expand=True)
+
+    def plotRT60s(self):
+        self.unpackGraphs()
+
+        self.cycleButton.pack(pady=(20, 0))
+
+        self.framebottom.pack(pady=(20,0))
+        if self.RT60counter == 0:
+            self.lowGraph.draw()
+            self.lowGraph.get_tk_widget().pack(side='left', anchor='sw', expand=True)
+        elif self.RT60counter == 1:
+            self.dBgraph.draw()
+            self.dBgraph.get_tk_widget().pack(side='left', padx=(3, 3), pady=(5, 0), anchor='nw', expand=True)
+        else:
+            self.highGraph.draw()
+            self.highGraph.get_tk_widget().pack(side='bottom', anchor='sw', expand=True)
+
+    def cycleRT60(self):
+        self.RT60counter += 1
+        if self.RT60counter > 2:
+            self.RT60counter = 0
+        self.plotRT60s()
+
+    def plotAllRT60s(self):
+        self.unpackGraphs()
+
+        self.totalgraph.draw()
+        self.totalgraph.get_tk_widget().pack(pady=(20,0))
+
+
+    def unpackGraphs(self):
+        self.graph.get_tk_widget().pack_forget()
+        self.dBgraph.get_tk_widget().pack_forget()
+        self.specGraph.get_tk_widget().pack_forget()
+        self.lowGraph.get_tk_widget().pack_forget()
+        self.highGraph.get_tk_widget().pack_forget()
+        self.frametop.pack_forget()
+        self.framebottom.pack_forget()
+        self.totalgraph.get_tk_widget().pack_forget()
+        self.cycleButton.pack_forget()
+        self.totalgraph.get_tk_widget().pack_forget()
 
 
     def getCurretFile(self):
