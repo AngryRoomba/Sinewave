@@ -47,7 +47,7 @@ class View:
         self.specfig = Figure(figsize=(4, 4), dpi=80)
         self.lowfig = Figure(figsize=(4, 4), dpi=80)
         self.highfig = Figure(figsize=(4, 4), dpi=80)
-        self.totalfig = Figure(figsize=(4,4), dpi=80)
+        self.totalfig = Figure(figsize=(4, 4), dpi=80)
         self.graph = FigureCanvasTkAgg(self.fig, master=self.frametop)
         self.dBgraph = FigureCanvasTkAgg(self.dBfig, master=self.framebottom)
         self.specGraph = FigureCanvasTkAgg(self.specfig, master=self.frametop)
@@ -135,7 +135,7 @@ class View:
         self.totalfig.suptitle("All RT60s")
         self.totalfig.supylabel("Power (dB)")
         self.totalfig.supxlabel("Time (s)")
-        totalplotter = self.fig.add_subplot(111)
+        totalplotter = self.totalfig.add_subplot(111)
         totalplotter.plot(tHigh, dBDataHigh, linewidth=1, alpha=0.7, color='#004bc6')
         totalplotter.plot(t[iMaxHigh], dBDataHigh[iMaxHigh], 'go')
         totalplotter.plot(t[i5High], dBDataHigh[i5High], 'yo')
@@ -201,8 +201,9 @@ class View:
     def plotAllRT60s(self):
         self.unpackGraphs()
 
+        self.frametop.pack(pady=(20, 0))
         self.totalgraph.draw()
-        self.totalgraph.get_tk_widget().pack(pady=(20,0))
+        self.totalgraph.get_tk_widget().pack(side='left', padx=(5, 0), pady=(5, 0), anchor='nw', expand=True)
 
 
     def unpackGraphs(self):
@@ -216,7 +217,6 @@ class View:
         self.totalgraph.get_tk_widget().pack_forget()
         self.cycleButton.pack_forget()
         self.totalgraph.get_tk_widget().pack_forget()
-
 
     def getCurretFile(self):
         if self.request['text'] == "ERROR: File must be .wav or .mp3!" or self.request[
