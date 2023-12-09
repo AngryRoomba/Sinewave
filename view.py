@@ -95,7 +95,6 @@ class View:
         self.dBfig.supxlabel("Time (s)")
         self.dBfig.supylabel("Power (dB)")
         self.dBfig.suptitle("Medium Frequency RT60")
-        self.fig.suptitle("Waveform")
         dBplotter.plot(t[iMax], DbData[iMax], 'go')
         dBplotter.plot(t[i5], DbData[i5], 'yo')
         dBplotter.plot(t[i25], DbData[i25], 'ro')
@@ -118,15 +117,9 @@ class View:
         Highplotter.plot(t[i5High], dBDataHigh[i5High], 'yo')
         Highplotter.plot(t[i25High], dBDataHigh[i25High], 'ro')
 
-        self.fig.supxlabel('Time (s)')
-        self.fig.supylabel('Frequency (Hz)')
-        plotter = self.fig.add_subplot(111)
-        plotter.plot(time, data[:])
-
         self.frametop.pack(side='top')
         self.framebottom.pack(side='bottom')
-        self.graph.draw()
-        self.graph.get_tk_widget().pack(side='left', padx=(5, 0), pady=(5, 0), anchor='nw', expand=True)
+
         # self.dataDisplay.pack(side='right')
         self.dBgraph.draw()
         self.dBgraph.get_tk_widget().pack(side='left', padx=(3, 3), pady=(5, 0), anchor='nw', expand=True)
@@ -134,6 +127,7 @@ class View:
         self.lowGraph.get_tk_widget().pack(side='left', anchor='sw', expand=True)
         self.highGraph.draw()
         self.highGraph.get_tk_widget().pack(side='bottom', anchor='sw', expand=True)
+
 
     def plotSpectrogram(self):
         t, DbData, iMax, i5, i25, file = self.controller.math(1000)
@@ -149,6 +143,19 @@ class View:
         self.specGraph.draw()
         self.specGraph.get_tk_widget().pack(side='left', pady=(5, 0), anchor='nw', expand=True)
 
+    def plotWaveform(self):
+        samplerate, data = wavfile.read(self.controller.model.file)
+        length = data.shape[0] / samplerate
+        time = np.linspace(0., length, data.shape[0])
+        self.fig.suptitle("Waveform")
+        self.fig.supxlabel('Time (s)')
+        self.fig.supylabel('Frequency (Hz)')
+        plotter = self.fig.add_subplot(111)
+        plotter.plot(time, data[:])
+        self.frametop.pack(side='top')
+        self.framebottom.pack(side='bottom')
+        self.graph.draw()
+        self.graph.get_tk_widget().pack(side='left', padx=(5, 0), pady=(5, 0), anchor='nw', expand=True)
 
 
     def getCurretFile(self):
