@@ -86,9 +86,9 @@ class View:
         self.plotData()
 
     def plotData(self):
-        t, DbData, iMax, i5, i25, file, rt60 = self.controller.math(1000)
-        tLow, dBDataLow, iMaxLow, i5Low, i25Low, file, rt60Low = self.controller.math(250)
-        tHigh, dBDataHigh, iMaxHigh, i5High, i25High, file, rt60High = self.controller.math(5000)
+        t, DbData, iMax, i5, i25, file, rt60, highest = self.controller.math(1000)
+        tLow, dBDataLow, iMaxLow, i5Low, i25Low, file, rt60Low, highestL = self.controller.math(250)
+        tHigh, dBDataHigh, iMaxHigh, i5High, i25High, file, rt60High, highestH = self.controller.math(5000)
         samplerate, data = wavfile.read(file)
         length = data.shape[0] / samplerate
         time = np.linspace(0., length, data.shape[0])
@@ -150,7 +150,7 @@ class View:
         totalplotter.plot(t[i25], DbData[i25], 'ro', label="_")
         self.totalfig.legend()
 
-        self.dataDisplay['text']= 'The file is ' + str(round(self.controller.model.time, 3)) + ' seconds long, the frequency of highest amplitude is XXX and the average RT60s are:\n LOW: '+ str(round(rt60Low-0.5, 3)) + ' MEDIUM: ' + str(round(rt60-.5, 3)) + ' HIGH: '+ str(round(rt60High-0.5, 3))
+        self.dataDisplay['text']= 'The file is ' + str(round(self.controller.model.time, 3)) + ' seconds long, the frequency of highest amplitude is '+ str(highest) + 'Hz and the average RT60s are:\n LOW: '+ str(round(rt60Low-0.5, 3)) + ' MEDIUM: ' + str(round(rt60-.5, 3)) + ' HIGH: '+ str(round(rt60High-0.5, 3))
         self.dataDisplay.pack(side='bottom')
         #self.frametop.pack(side='top')
         #self.framebottom.pack(side='bottom')
