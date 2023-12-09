@@ -63,7 +63,7 @@ class Model:
         #plt.show()
         return self.t, dataInDb, indexOfMax, indexLess5, indexLess25, self.file
 
-    def findTargetFrequency(self, freqs, targetFreq=1000):
+    def findTargetFrequency(self, freqs, targetFreq):
 
         for x in freqs:
             if x > targetFreq:
