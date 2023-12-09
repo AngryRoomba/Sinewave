@@ -27,7 +27,7 @@ class View:
         self.reqButton.pack(side='top', pady=(5, 0))
 
         self.checkButton = Button(root, text='Plot RT60s', command=self.plotData)
-        self.waveButton = Button(root, text='Show the Waveform', command=self.plotData)
+        self.waveButton = Button(root, text='Show the Waveform', command=self.plotWaveform)
         self.spectButton = Button(root, text='Show the Spectrogram', command=self.plotSpectrogram)
 
         self.time = Label(root, text='Time display', bg='white', fg='black')
@@ -128,10 +128,8 @@ class View:
         self.highGraph.draw()
         self.highGraph.get_tk_widget().pack(side='bottom', anchor='sw', expand=True)
 
-
     def plotSpectrogram(self):
-        t, DbData, iMax, i5, i25, file = self.controller.math(1000)
-        samplerate, data = wavfile.read(file)
+        samplerate, data = wavfile.read(self.controller.model.file)
 
         self.specfig.suptitle("Spectrogram")
         specPlotter = self.specfig.add_subplot(111)
@@ -147,11 +145,13 @@ class View:
         samplerate, data = wavfile.read(self.controller.model.file)
         length = data.shape[0] / samplerate
         time = np.linspace(0., length, data.shape[0])
+
         self.fig.suptitle("Waveform")
         self.fig.supxlabel('Time (s)')
         self.fig.supylabel('Frequency (Hz)')
         plotter = self.fig.add_subplot(111)
         plotter.plot(time, data[:])
+
         self.frametop.pack(side='top')
         self.framebottom.pack(side='bottom')
         self.graph.draw()
