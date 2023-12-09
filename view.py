@@ -26,9 +26,9 @@ class View:
         self.reqButton = Button(root, text='Select Audio File', command=self.open_file)
         self.reqButton.pack(side='top', pady=(5, 0))
 
-        self.checkButton = Button(root, text='Plot the given data', command=self.plotData)
+        self.checkButton = Button(root, text='Plot RT60s', command=self.plotData)
         self.waveButton = Button(root, text='Show the Waveform', command=self.plotData)
-        self.spectButton = Button(root, text='Show the Spectrogram', command=self.plotData)
+        self.spectButton = Button(root, text='Show the Spectrogram', command=self.plotSpectrogram)
 
         self.time = Label(root, text='Time display', bg='white', fg='black')
 
@@ -61,12 +61,24 @@ class View:
             self.dataDisplay.pack_forget()
             self.graph.get_tk_widget().pack_forget()
             self.dBgraph.get_tk_widget().pack_forget()
+            self.specGraph.get_tk_widget().pack_forget()
+            self.lowGraph.get_tk_widget().pack_forget()
+            self.highGraph.get_tk_widget().pack_forget()
+            self.frametop.pack_forget()
+            self.framebottom.pack_forget()
         else:
             self.request['text'] = "ERROR: File must be .wav or .mp3!"
             self.checkButton.pack_forget()
             self.dataDisplay.pack_forget()
             self.graph.get_tk_widget().pack_forget()
             self.dBgraph.get_tk_widget().pack_forget()
+            self.specGraph.get_tk_widget().pack_forget()
+            self.lowGraph.get_tk_widget().pack_forget()
+            self.highGraph.get_tk_widget().pack_forget()
+            self.frametop.pack_forget()
+            self.framebottom.pack_forget()
+            self.waveButton.pack_forget()
+            self.spectButton.pack_forget()
             return
         self.controller.convert(self.request['text'])
 
@@ -111,16 +123,8 @@ class View:
         plotter = self.fig.add_subplot(111)
         plotter.plot(time, data[:])
 
-        self.specfig.suptitle("Spectrogram")
-        specPlotter = self.specfig.add_subplot(111)
-        spec, fr, ti, im = specPlotter.specgram(data, Fs=samplerate, NFFT=1024, cmap=plt.get_cmap('autumn_r'))
-        cbar = self.specfig.colorbar(im)
-        cbar.set_label('Intensity (dB)')
-
         self.frametop.pack(side='top')
         self.framebottom.pack(side='bottom')
-        self.specGraph.draw()
-        self.specGraph.get_tk_widget().pack(side='left', pady=(5, 0), anchor='nw', expand=True)
         self.graph.draw()
         self.graph.get_tk_widget().pack(side='left', padx=(5, 0), pady=(5, 0), anchor='nw', expand=True)
         # self.dataDisplay.pack(side='right')
@@ -130,6 +134,22 @@ class View:
         self.lowGraph.get_tk_widget().pack(side='left', anchor='sw', expand=True)
         self.highGraph.draw()
         self.highGraph.get_tk_widget().pack(side='bottom', anchor='sw', expand=True)
+
+    def plotSpectrogram(self):
+        t, DbData, iMax, i5, i25, file = self.controller.math(1000)
+        samplerate, data = wavfile.read(file)
+
+        self.specfig.suptitle("Spectrogram")
+        specPlotter = self.specfig.add_subplot(111)
+        spec, fr, ti, im = specPlotter.specgram(data, Fs=samplerate, NFFT=1024, cmap=plt.get_cmap('autumn_r'))
+        cbar = self.specfig.colorbar(im)
+        cbar.set_label('Intensity (dB)')
+
+        self.frametop.pack(side='top')
+        self.specGraph.draw()
+        self.specGraph.get_tk_widget().pack(side='left', pady=(5, 0), anchor='nw', expand=True)
+
+
 
     def getCurretFile(self):
         if self.request['text'] == "ERROR: File must be .wav or .mp3!" or self.request[
