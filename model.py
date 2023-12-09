@@ -64,7 +64,7 @@ class Model:
         rt60 = rt20 * 3
         plt.grid()
         #plt.show()
-        return self.t, dataInDb, indexOfMax, indexLess5, indexLess25, self.file, rt60
+        return self.t, dataInDb, indexOfMax, indexLess5, indexLess25, self.file, rt60, self.findHighestFreq(self.freqs)
 
     def findTargetFrequency(self, freqs, targetFreq):
 
@@ -85,3 +85,10 @@ class Model:
         array = np.asarray(array)
         idx = (np.abs(array - value)).argmin()
         return array[idx]
+
+    def findHighestFreq(self, freqs):
+        largest = 0
+        for x in freqs:
+            if x > largest:
+                largest = x
+        return x
