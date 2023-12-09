@@ -42,12 +42,14 @@ class View:
         self.frametop = Frame(root)
         self.framebottom = Frame(root)
 
+
         self.fig = Figure(figsize=(5, 5), dpi=100)
         self.dBfig = Figure(figsize=(5, 5), dpi=100)
         self.specfig = Figure(figsize=(5, 5), dpi=100)
         self.lowfig = Figure(figsize=(5, 5), dpi=100)
         self.highfig = Figure(figsize=(5, 5), dpi=100)
         self.totalfig = Figure(figsize=(5, 5), dpi=100)
+
         self.graph = FigureCanvasTkAgg(self.fig, master=self.frametop)
         self.dBgraph = FigureCanvasTkAgg(self.dBfig, master=self.framebottom)
         self.specGraph = FigureCanvasTkAgg(self.specfig, master=self.frametop)
@@ -152,6 +154,7 @@ class View:
 
         self.dataDisplay['text']= 'The file is ' + str(time) + 'seconds long, the frequency of highest amplitude is XXX and the average RT60s are:\n LOW: '+ str(rt60Low-0.5) + ' MEDIUM: ' + str(rt60-.5) + ' HIGH: '+ str(rt60High-0.5)
         self.dataDisplay.pack(side='bottom')
+
         #self.frametop.pack(side='top')
         #self.framebottom.pack(side='bottom')
 
@@ -203,8 +206,9 @@ class View:
     def plotAllRT60s(self):
         self.unpackGraphs()
 
+        self.frametop.pack(pady=(20, 0))
         self.totalgraph.draw()
-        self.totalgraph.get_tk_widget().pack(pady=(20,0))
+        self.totalgraph.get_tk_widget().pack(side='left', padx=(5, 0), pady=(5, 0), anchor='nw', expand=True)
 
 
     def unpackGraphs(self):
@@ -218,7 +222,6 @@ class View:
         self.totalgraph.get_tk_widget().pack_forget()
         self.cycleButton.pack_forget()
         self.totalgraph.get_tk_widget().pack_forget()
-
 
     def getCurretFile(self):
         if self.request['text'] == "ERROR: File must be .wav or .mp3!" or self.request[
