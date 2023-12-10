@@ -3,7 +3,7 @@ requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 [project]
 name = "sinwave_graphing_group_30"
-version = "0.4"
+version = "5"
 authors = [
     {name="Hunter DeLoach", email="hdeloach2363@floridapoly.edu"},
     {name="Maxime Weeks", email="mweeks2426@floridapoly.edu"},
