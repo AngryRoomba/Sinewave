@@ -1,3 +1,11 @@
+## Dec 9 v5 FINAL VERSION
+- Added buttons for displaying each graph
+- Each button now has its own display function
+- Added a button to cycle between the RT60 graphs
+- Added a text box with general information about the audio file
+- Added combined RT60 graph functionality
+- Updated file type conversion to check for uppercase file extentions
+
 ### Dec 8 v4
 - Removed metadata from input in modle.py
 - Added graphs to GUI using view.py
